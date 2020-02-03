@@ -2778,6 +2778,7 @@ class Buoy(object):
         >>> buoy = ESSC.Buoy('46022','NDBC')
         >>> buoy.fetchFromWeb()
         '''
+        print("This is the correct file");
         if self.buoyType == "NDBC":
             self.__fetchNDBC(proxy)
         elif self.buoyType == "CDIP":
@@ -2833,7 +2834,7 @@ class Buoy(object):
             dataLink = "https://ndbc.noaa.gov" + link
 
             fileName = dataLink.replace('download_data', 'view_text_file')
-            data = urllib.request.urlopen(fileName)
+            data = urllib.request.urlopen(fileName, timeout=120)
             print("Reading from:", data.geturl())
 
             #First Line of every file contains the frequency data
