@@ -2640,8 +2640,6 @@ class BivariateKDE(EA):
             ty = [logTp, logHs]
         else: 
             ty = [self.buoy.T, self.buoy.Hs]
-      
-
         # Create grid of points
         Ndata = self.NData
         min_limit_1 = 0.01
@@ -2664,7 +2662,8 @@ class BivariateKDE(EA):
         m = len(txi[0])
         n = len(ty[0])
         d = 2
-
+        print("M: ",m);
+        print("N: ",n);
         # Create contour
         f = np.zeros((1,m))
         weight = np.ones((1,n))
@@ -2680,10 +2679,10 @@ class BivariateKDE(EA):
                 fnew = np.reshape(fnew, (n,1))
                 ftemp = np.multiply(ftemp,fnew)
             f[:,i] = np.dot(weight,ftemp)
-
-
         fhat = f.reshape(100,100)
-        vals = plt.contour(pt1,pt2,fhat, levels = [p_f])
+        print(pt1,pt2,fhat,p_f);
+        vals = plt.contour(pt1,pt2, fhat, levels = [p_f])
+        print(vals.allsegs)
         plt.clf()
         self.Hs_ReturnContours = []
         self.T_ReturnContours = []
