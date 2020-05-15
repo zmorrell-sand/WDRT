@@ -303,8 +303,7 @@ class EA:
             pca46022 = ESSC.PCA(buoy46022)
             
             T_vals = np.arange(0.1, np.amax(buoy46022.T), 0.1)
-            # Enter estimate of breaking steepness
-            SteepMax = 0.07  # Reference DNV-RP-C205
+            SteepMax = 0.07  # Enter estimate of breaking steepness
             
             # Declare required parameters
             depth = 391.4  # Depth at measurement point (m)
@@ -2641,8 +2640,6 @@ class BivariateKDE(EA):
             ty = [logTp, logHs]
         else: 
             ty = [self.buoy.T, self.buoy.Hs]
-      
-
         # Create grid of points
         Ndata = self.NData
         min_limit_1 = 0.01
@@ -2665,7 +2662,8 @@ class BivariateKDE(EA):
         m = len(txi[0])
         n = len(ty[0])
         d = 2
-
+        print("M: ",m);
+        print("N: ",n);
         # Create contour
         f = np.zeros((1,m))
         weight = np.ones((1,n))
@@ -2681,20 +2679,20 @@ class BivariateKDE(EA):
                 fnew = np.reshape(fnew, (n,1))
                 ftemp = np.multiply(ftemp,fnew)
             f[:,i] = np.dot(weight,ftemp)
-
-
         fhat = f.reshape(100,100)
-        vals = plt.contour(pt1,pt2,fhat, levels = [p_f])
+        print(pt1,pt2,fhat,p_f);
+        vals = plt.contour(pt1,pt2, fhat, levels = [p_f])
+        print(vals.allsegs)
         plt.clf()
         self.Hs_ReturnContours = []
         self.T_ReturnContours = []
         for i,seg in enumerate(vals.allsegs[0]):
-            self.Hs_ReturnContours.append(seg[:,1][:])
+            self.Hs_ReturnContours.append(seg[:,1])
             self.T_ReturnContours.append(seg[:,0])
-#        
-#        self.Hs_ReturnContours = np.transpose(np.asarray(self.Hs_ReturnContours)[0])
-#        self.T_ReturnContours = np.transpose(np.asarray(self.T_ReturnContours)[0])
-#        self.vals = vals    
+        
+        self.Hs_ReturnContours = np.transpose(np.asarray(self.Hs_ReturnContours)[0])
+        self.T_ReturnContours = np.transpose(np.asarray(self.T_ReturnContours)[0])
+            
 #        contourVals = np.empty((0,2))
 #        for seg in vals.allsegs[0]:
 #            contourVals = np.append(contourVals,seg, axis = 0)
@@ -2779,6 +2777,7 @@ class Buoy(object):
         >>> buoy = ESSC.Buoy('46022','NDBC')
         >>> buoy.fetchFromWeb()
         '''
+        print("This is the correct file");
         if self.buoyType == "NDBC":
             self.__fetchNDBC(proxy)
         elif self.buoyType == "CDIP":
@@ -2834,7 +2833,7 @@ class Buoy(object):
             dataLink = "https://ndbc.noaa.gov" + link
 
             fileName = dataLink.replace('download_data', 'view_text_file')
-            data = urllib.request.urlopen(fileName)
+            data = urllib.request.urlopen(fileName, timeout=120)
             print("Reading from:", data.geturl())
 
             #First Line of every file contains the frequency data
@@ -3183,7 +3182,7 @@ class Buoy(object):
                str(self.buoyNum) +"p1_historic.nc"        
         print("Downloading data from: " + url)    
         filePath = savePath + "/" + str(self.buoyNum) + "-CDIP.nc"
-        urllib.request.urlretrieve (url, filePath)
+        urllib.urlretrieve (url, filePath)
 
         self.__processCDIPData(filePath)
 
